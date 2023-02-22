@@ -1,16 +1,15 @@
 //variables
 
-var startBtn = document.getElementById("startBtn");
-var submitBtn = document.getElementById("submitBtn");
+var startBtn = document.querySelector("#startBtn");
+var submitBtn = document.querySelector("#submitBtn");
 var questionsEl = document.getElementById("questions");
 var choicesEl = document.getElementById("choices");
 var score = 0;
 var time = 90;
 var startCount = false;
-var highScores = [];
 var timer = document.getElementById("countdownTimer")
 var timeLeft = true;
-var initials = document.getElementById("initials")
+var initialsEl = document.getElementById("initials")
 var thisQuestion = 0;
 //array of questions and their answers
 var questions = [
@@ -41,10 +40,11 @@ var questions = [
   }];
 
 
-//make the countdown timer variable + function
-var countdownInterval = setInterval(setCountdownTimer, 1000);
+  var countdownInterval = setInterval(setCountdownTimer, 1000);
 
 function setCountdownTimer(){
+  //make the countdown timer variable + function
+
   if (startCount){
   time --;
   }
@@ -55,7 +55,7 @@ function setCountdownTimer(){
 }
 
 //Event listener for the start button
-startBtn.addEventListener("click", function() {
+function startQuiz() {
   //hide start screen
   var startScreenEl = document.getElementById("startScreen");
   startScreenEl.setAttribute("class", "hide");
@@ -63,10 +63,10 @@ startBtn.addEventListener("click", function() {
   //show questions
   questionsEl.removeAttribute("class");
 
-  // setCountdownTimer();
+  setCountdownTimer();
   setQuestions();
   startCount= true;
-});
+};
 
 function setQuestions() {
   var currentQuestion = questions[thisQuestion];
@@ -109,8 +109,9 @@ function clickAnswer() {
     else {
       setQuestions();
     }
+}
 
-    function stopQuiz(){
+function stopQuiz(){
       //stop timer
       clearInterval(countdownInterval);
 
@@ -123,6 +124,31 @@ function clickAnswer() {
       finalScore.textContent = time;
 
       //hide last question
-      questionsEl.setAttribute("class", "hide")
-    }
+      questionsEl.setAttribute("class", "hide") 
 }
+
+function saveHighscore() {
+  var initials = initialsEl.value;
+
+  //pull scores locally if they dont exist create blank array
+  var highscores = JSON.parse(window.localStorage.getItem("highscores")) || [];
+
+  var formatScore = {
+    score: time,
+    initials: initials
+  }
+  console.log(formatScore)
+  //save scores
+  highscores.push(formatScore);
+  window.localStorage.setItem("highscores", JSON.stringify(highscores));
+  console.log(highscores)
+
+  //redirect to scores page
+  window.location.href = "scores.html";
+};
+
+// submit initials
+submitBtn.onclick = saveHighscore;
+
+// start quiz
+startBtn.onclick = startQuiz;
